@@ -9,6 +9,7 @@ JC = javac
 	$(JC) $(JFLAGS) $*.java
 
 CLASSES = \
+	./src/main/java/com/github/mjvesa/spil/VaadinUtil.java \
 	./src/main/java/com/github/mjvesa/spil/MyUI.java \
 
 default: classes package deploy
