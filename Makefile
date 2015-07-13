@@ -1,7 +1,8 @@
 # For compiling Vaadin projects
 
-WEBAPPS =  /home/mjvesa/opt/apache-tomcat-7.0.40/webapps
-JFLAGS = -g -cp .:WEB-INF/lib/*:/home/mjvesa/opt/apache-tomcat-7.0.40/lib/* -d WEB-INF/classes
+TOMCAT = /home/yobi/opt/tomcat
+WEBAPPS =  $(TOMCAT)/webapps
+JFLAGS = -g -cp .:WEB-INF/lib/*:$(TOMCAT)/lib/* -d WEB-INF/classes
 
 JC = javac
 .SUFFIXES: .java .class
