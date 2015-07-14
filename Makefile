@@ -1,8 +1,9 @@
 # For compiling Vaadin projects
 
-TOMCAT = /home/yobi/opt/tomcat
+TOMCAT = /home/mjvesa/opt/tomcat
 WEBAPPS =  $(TOMCAT)/webapps
-JFLAGS = -g -cp .:WEB-INF/lib/*:$(TOMCAT)/lib/* -d WEB-INF/classes
+CLASSPATH = .:WEB-INF/lib/*:$(TOMCAT)/lib/*:WEB-INF/classes
+JFLAGS = -g -cp $(CLASSPATH) -d WEB-INF/classes
 
 JC = javac
 .SUFFIXES: .java .class
@@ -11,6 +12,7 @@ JC = javac
 
 CLASSES = \
 	./src/main/java/com/github/mjvesa/spil/VaadinUtil.java \
+	./src/main/java/com/github/mjvesa/spil/WatchDir.java \
 	./src/main/java/com/github/mjvesa/spil/MyUI.java \
 
 default: classes package deploy
