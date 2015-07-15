@@ -31,9 +31,9 @@ import com.github.mjvesa.spil.WatchDir;
 @Widgetset("com.vaadin.DefaultWidgetSet")
 public class MyUI extends UI {
 
-    //    private final String SOURCE_DIR = "/home/mjvesa/spil_src/";
     private String sourceDir; 
-
+    private Button evalButton;
+    
     @Override
     protected void init(VaadinRequest vaadinRequest) {
 
@@ -51,6 +51,7 @@ public class MyUI extends UI {
 		js.eval("(begin " + loadBuffer() + ")");
 		js.call("main", outputLayout);
 	    });
+	evalButton = eval;
         eval.setClickShortcut(KeyCode.R, ModifierKey.CTRL);
         VerticalLayout mainLayout = 
 	    new VerticalLayout(outputLayout, eval);
@@ -63,10 +64,7 @@ public class MyUI extends UI {
 		    new WatchDir(FileSystems.getDefault().getPath(sourceDir), true, () -> {
 			    MyUI.this.access( new Runnable() {
 				    public void run() {
-					outputLayout.removeAllComponents();
-					final JScheme js = new JScheme();
-					js.eval("(begin " + loadBuffer() + ")");
-					js.call("main", outputLayout);
+					evalButton.click();
 				    }
 				});
 		    }).processEvents();
@@ -110,6 +108,8 @@ public class MyUI extends UI {
 	    e.printStackTrace();
 	}
     }
+
+
 
     @WebServlet(urlPatterns = "/*", name = "MyUIServlet", asyncSupported = true)
     @VaadinServletConfiguration(ui = MyUI.class, productionMode = false)
