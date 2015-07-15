@@ -20,6 +20,7 @@ default: classes package deploy
 classes: $(CLASSES:.java=.class)
 
 package:
+	cp spil.properties WEB-INF/classes
 	zip -r spil.war *
 
 deploy:

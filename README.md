@@ -1,8 +1,13 @@
 Spil
 ====
 
-A minimal Lisp IDE web app. Probably will use:
+A small web app for writing Vaadin UIs in Scheme.  It Provides a simple view and  ability to evaluate Scheme
+scripts either initiated by the user or when the source files change. The Scheme supported by JScheme is R4RS with some
+limitations.
 
+Technologies used:
+
+    * JVM
     * Vaadin
     * JScheme
 
@@ -11,7 +16,7 @@ Workflow
 ========
 
 Run make to make. The makefile needs to be modified to suit
-your environment.
+your environment. Also add your source directory to spil.properties before building.
 
 Purpose
 =======
