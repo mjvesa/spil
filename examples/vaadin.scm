@@ -29,10 +29,10 @@
  (.setValue (.getItemProperty item prop) (.getValue field)))
 
 (define (set-props-from-fields item props)
-  (if (null? item)
+  (if (null? props)
     '()
     (begin 
-      (set-prop item (car (car props)) (car (cdr (car props))))
+      (set-prop item (car (car props)) (cdr (car  props)))
       (set-props-from-fields item (cdr props)))))
 
 (define (add-components cont components)
@@ -40,3 +40,36 @@
 	    components)
   cont)
 
+(define (in-memory-crud field-names)
+  (begin
+    (define (create-text-fields field-names)
+      (if (eq? field-names '())
+     	  '()
+     	  (cons
+     	   (cons (car field-names)
+     		 (TextField. (.toString (car field-names))))
+     	   (create-text-fields (cdr field-names)))))
+    (define fields (create-text-fields field-names))
+    (define container (create-container-with-fields field-names))
+    (define contacts (Table. "Contacts" container))
+    (define (add-contact) 
+      (let ((item (.getItem container (.addItem container))))
+	(begin 
+	  (set-props-from-fields item fields))))
+    (define add-button (Button. "Add"
+				(VaadinUtil.buttonClickListener (lambda (event) (add-contact)))))
+    (define (get-components-from-fields fields)
+      (if (eq? fields '())
+	  '()
+	  (cons (cdr (car fields)) (get-components-from-fields (cdr fields)))))
+    (define (create-fields)
+      (let ((vl (VerticalLayout.)))
+	(begin
+	  (doto vl	    
+		((.setMargin #t)
+		 (add-components
+		  (get-components-from-fields fields)))))))
+    (define layout (VerticalLayout.))
+    (add-components layout (list (create-fields) add-button contacts))
+    layout))
+  
