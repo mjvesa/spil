@@ -37,5 +37,6 @@
 
 (define (add-components cont components)
   (for-each (lambda (c) (.addComponent cont c))
-	    components))
+	    components)
+  cont)
 
