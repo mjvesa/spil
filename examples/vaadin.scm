@@ -1,4 +1,7 @@
 ;; Vaadin support for Scheme
+(import "com.vaadin.ui.*")
+(import "com.vaadin.data.util.*")
+(import "com.github.mjvesa.spil.VaadinUtil")
 
 (define (inner-doto target ops)
   (if (eq? ops '())
@@ -30,4 +33,9 @@
     '()
     (begin 
       (set-prop item (car (car props)) (car (cdr (car props))))
-        (set-props-from-fields item (cdr props)))))
+      (set-props-from-fields item (cdr props)))))
+
+(define (add-components cont components)
+  (for-each (lambda (c) (.addComponent cont c))
+	    components))
+
