@@ -51,15 +51,24 @@
 ;;    (.setVisibleColumns contacts 
 ;;      (list-to-array (list "jee" "jaa")))))
 
+
+(define doto (macro target ops)
+  (if (= ops '())
+      '()
+      (cons `(,(car (car ops)) target (cdr (car ops)))
+	                   (doto target (cdr ops)))))
 (define (create-fields)
   (let ((vl (VerticalLayout.)))
-    (begin 
-      (.setMargin vl #t)
-      (.addComponent vl name-field)
-      (.addComponent vl street-field)
-      (.addComponent vl zip-field)
-      (.addComponent vl city-field)
-       vl)))
+    (begin
+      (doto vl	    
+	    (.setMargin #t)
+	    (.addComponent name-field)
+	    (.addComponent street-field)
+	    (.addComponent zip-field)
+	    (.addComponent city-field))
+      vl)))
+
+
 
 (define (main ui)
   (begin 

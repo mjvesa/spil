@@ -13,6 +13,7 @@ JC = javac
 CLASSES = \
 	./src/main/java/com/github/mjvesa/spil/VaadinUtil.java \
 	./src/main/java/com/github/mjvesa/spil/WatchDir.java \
+	./src/main/java/com/github/mjvesa/spil/SchemeComponent.java \
 	./src/main/java/com/github/mjvesa/spil/MyUI.java \
 
 default: classes package deploy
@@ -20,7 +21,9 @@ default: classes package deploy
 classes: $(CLASSES:.java=.class)
 
 package:
+	cp -r src/main/resources/* WEB-INF/classes
 	cp spil.properties WEB-INF/classes
+	cp examples/vaadin.scm WEB-INF/classes
 	zip -r spil.war *
 
 deploy:
