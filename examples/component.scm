@@ -1,51 +1,44 @@
-; Custom component example
-(import "com.vaadin.ui.*")
-(import "com.vaadin.data.util.*")
-(import "com.github.mjvesa.spil.VaadinUtil")
-(import "com.github.mjvesa.spil.SchemeComponent")
+;; Custom component examples
+(load "vaadin.scm")
+
+(define-macro (basic-label text)
+  `(widget
+    (client-init
+     (element-append-child! root-element (element-new '(div ,text))))))
+
+(define-macro (modifiable-label text)
+  `(let ((component (widget
+		     (client-init
+		      (define text-div (element-new '(div ,text)))
+		      (element-append-child! root-element text-div))
+		     (client-rpc set-text
+				 (js-set! text-div "innerHTML" "value goes here")))))
+     (lambda (op)
+       (case op
+	 ((component) component)
+	 ((set-text) (lambda (x) (call-client component 'set-text)))))))
 
 
-;; (define js-code
-;;   '(begin
-;;     (define namespace "com_github_mjvesa_spil_SchemeComponent")
-;;     (define self (string-append namespace ".self"))
-;;     (js-set! (js-eval self) "kaboom" (js-closure (lambda () (console-warn "KABOOM!"))))))
+(define component
+  (widget
+   (client-init      
+     ((define canvas
+	(element-new '(canvas)))
+      (element-append-child! (js-invoke self "getElement") canvas)
+      (define ctx
+	(js-invoke canvas "getContext" "2d"))
+      (js-set! ctx "fillStyle" "blue")
+      (js-invoke ctx "fillRect" 10 10 100 100)))
+    (client-rpc poks
+		(begin
+		  (console-warn "I was called")
+		  (js-set! ctx "fillStyle" "green")
+		  (js-invoke ctx "fillRect" 10 10 40 30)))))
 
-
-(define client-boilerplate
-  '(begin (define namespace "com_github_mjvesa_spil_SchemeComponent")
-	  (define self (js-eval (string-append namespace ".self")))))
- 
-(define (client-rpc name code)
-  (cons 'begin
-	(cons client-boilerplate
-	      `((js-set! self ,name (js-closure (lambda () ,@code)))))))
-
-(define (handle-widget-section comp section)
-  (let ((section? (lambda (section-name) (eq? section-name (car section)))))
-    (cond
-     ((section? 'client-init)
-      (.setComponentCode comp (.toString (cadr section))))
-     ((section? 'client-rpc)
-      (.setComponentCode comp (.toString (client-rpc (.toString (cadr section)) (cddr section)))))
-     (else (display (string-append ("Unrecognized section: " (car section))))))))
-
-
-
-(define-macro  (widget widget-definition) 
-  `(let ((comp (SchemeComponent.)))
-     (for-each (lambda (def) (handle-widget-section comp  def)) ',widget-definition)
-     comp))
-
-(define (call-client comp func)
-  (.callClient comp (.toString func)))
 
 (define (main ui)
-  (let ((comp (widget
-	       ((client-init
-		 (console-warn "Hello world"))
-		(client-rpc poks
-			    (console-warn "I was called"))))))
-    (.addComponent ui comp)
-    (call-client  comp 'poks)))
+  (let ((label (modifiable-label "whoa dude")))    
+    (.addComponent ui (label 'component))
+    ((label 'set-text) "stuff")
+    (.addComponent ui (basic-label "<b>This is not modifiable</b>"))))
 

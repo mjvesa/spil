@@ -23,7 +23,7 @@ classes: $(CLASSES:.java=.class)
 package:
 	cp -r src/main/resources/* WEB-INF/classes
 	cp spil.properties WEB-INF/classes
-	cp examples/vaadin.scm WEB-INF/classes
+	cp scm/* WEB-INF/classes
 	zip -r spil.war *
 
 deploy:
