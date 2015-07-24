@@ -5,36 +5,47 @@
 (import "com.github.mjvesa.spil.SchemeComponent")
 
 
-(define js-code
-  '(begin
-    (define namespace "com_github_mjvesa_spil_SchemeComponent")
-    (define self (string-append namespace ".self"))
-    (js-set! (js-eval self) "kaboom" (js-closure (lambda () (alert "KABOOM!"))))))
+;; (define js-code
+;;   '(begin
+;;     (define namespace "com_github_mjvesa_spil_SchemeComponent")
+;;     (define self (string-append namespace ".self"))
+;;     (js-set! (js-eval self) "kaboom" (js-closure (lambda () (console-warn "KABOOM!"))))))
 
 
+(define client-boilerplate
+  '(begin (define namespace "com_github_mjvesa_spil_SchemeComponent")
+	  (define self (js-eval (string-append namespace ".self")))))
+ 
+(define (client-rpc name code)
+  (cons 'begin
+	(cons client-boilerplate
+	      `((js-set! self ,name (js-closure (lambda () ,@code)))))))
+
+(define (handle-widget-section comp section)
+  (let ((section? (lambda (section-name) (eq? section-name (car section)))))
+    (cond
+     ((section? 'client-init)
+      (.setComponentCode comp (.toString (cadr section))))
+     ((section? 'client-rpc)
+      (.setComponentCode comp (.toString (client-rpc (.toString (cadr section)) (cddr section)))))
+     (else (display (string-append ("Unrecognized section: " (car section))))))))
+
+
+
+(define-macro  (widget widget-definition) 
+  `(let ((comp (SchemeComponent.)))
+     (for-each (lambda (def) (handle-widget-section comp  def)) ',widget-definition)
+     comp))
+
+(define (call-client comp func)
+  (.callClient comp (.toString func)))
 
 (define (main ui)
-  (let ((comp (SchemeComponent.)))
-    (.setComponentCode comp (.toString js-code))
+  (let ((comp (widget
+	       ((client-init
+		 (console-warn "Hello world"))
+		(client-rpc poks
+			    (console-warn "I was called"))))))
     (.addComponent ui comp)
-    (.callClient comp "kaboom")
-    (.addComponent ui (Label. (.toString js-code)))))
-
-
-
-
-;; TODO here are some ideas for a procedure for creating client side components
-
-;; (widget name
-;;  (client-init
-;;    ())
-;;  (server-init
-;;    ())
-;;  (server-to-client  
-;;   ())
-;;  (client-to-server
-;;   ())
-;;  (state-change
-;;   ()))
-
+    (call-client  comp 'poks)))
 
