@@ -13,7 +13,7 @@ public class SchemeComponent extends AbstractJavaScriptComponent {
 	callFunction("setComponentCode", src);
     }
 
-    public void callClient(String func, Object...args) {
+    public void callClientRPC(String func, String args) {
 	callFunction(func, args);
     }
 	
