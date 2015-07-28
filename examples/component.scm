@@ -12,7 +12,10 @@
 		      (define text-div (element-new '(div ,text)))
 		      (element-append-child! root-element text-div))
 		     (client-rpc (set-text value)
-				 (js-set! text-div "innerHTML" value)))))
+				 (js-set! text-div "innerHTML" value)
+				 (call-server 'testi '(test list)))
+		     (server-rpc (testi text)
+				 (display text)))))
      (lambda (op)
        (case op
 	 ((component) component)
@@ -41,4 +44,5 @@
     (.addComponent ui (label 'component))
     ((label 'set-text) "\"New text\"")
     (.addComponent ui (basic-label "<b>This is not modifiable</b>"))
-    (.addComponent ui component)))
+    (.addComponent ui component)
+    (call-client component 'poks)))

@@ -33,6 +33,7 @@ public class MyUI extends UI {
 
     private String sourceDir; 
     private Button evalButton;
+    private JScheme scheme;
     
     @Override
     protected void init(VaadinRequest vaadinRequest) {
@@ -109,7 +110,18 @@ public class MyUI extends UI {
 	}
     }
 
+    public void setInterpreter(JScheme scheme) {
+	this.scheme = scheme;
+    }
 
+    public JScheme getInterpreter() {
+	return this.scheme;
+    }
+
+    public static MyUI getCurrent() {
+	return (MyUI)UI.getCurrent();
+    }
+    
 
     @WebServlet(urlPatterns = "/*", name = "MyUIServlet", asyncSupported = true)
     @VaadinServletConfiguration(ui = MyUI.class, productionMode = false)
