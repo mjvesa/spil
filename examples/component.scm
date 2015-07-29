@@ -15,7 +15,9 @@
 				 (js-set! text-div "innerHTML" value)
 				 (call-server 'testi '(test list)))
 		     (server-rpc (testi text)
-				 (display text)))))
+				 (add-label (.toString text)))
+		     (on-state-change
+		      (js-set! text-div "innerHTML" "State changed")))))
      (lambda (op)
        (case op
 	 ((component) component)
@@ -39,10 +41,19 @@
 		  (js-invoke ctx "fillRect" 10 10 40 30)))))
 
 
+(define main-layout '())
+
+(define (add-label text)
+  (.addComponent main-layout (Label. text)))
+		    
 (define (main ui)
-  (let ((label (modifiable-label "Old text")))    
+  (let ((label (modifiable-label "Old text")))
+    (set! main-layout ui)
     (.addComponent ui (label 'component))
     ((label 'set-text) "\"New text\"")
+    (.addComponent ui (Button. "Change state"
+			       (VaadinUtil.buttonClickListener (lambda (event)
+								 (set-widget-state (label 'component) '(This is my state))))))
     (.addComponent ui (basic-label "<b>This is not modifiable</b>"))
     (.addComponent ui component)
     (call-client component 'poks)))

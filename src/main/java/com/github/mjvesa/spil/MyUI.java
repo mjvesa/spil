@@ -93,9 +93,7 @@ public class MyUI extends UI {
 	return sb.toString();
     }
 
-
-
-    private void loadProps() {
+   private void loadProps() {
 	try {
 	    URL propsURL = getClass().getClassLoader().getResource("spil.properties");
 	    Properties props = new Properties();
