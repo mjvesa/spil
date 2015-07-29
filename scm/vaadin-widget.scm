@@ -21,19 +21,20 @@
 			  (lambda (str) (let ((,@(cdr params) (read (open-input-string str))))
 					      ,code))))))))
 
-;;(define-macro (server-rpc paramname code)
-;;  `(lambda (,@paramname) ,code))
 
 (define (handle-widget-section comp section)
-  (let ((section? (lambda (section-name) (eq? section-name (car section)))))
+  (let ((section? (lambda (section-name) (eq? section-name (car section))))
+	(param-name (cdadr section))
+	(section-code (caddr section)))
     (cond
      ((section? 'client-init)
       (.setComponentCode comp (.toString (cons 'begin (cons client-boilerplate (cdr section))))))
      ((section? 'client-rpc)
       (.setComponentCode comp (.toString (client-rpc (cadr section) (cddr section)))))
      ((section? 'server-rpc)
-      (.registerServerRpc  comp (symbol->string (caadr section)) (lambda (poks) (display poks))))
-			   ;;(lambda (cdadr section) (caddr section))))
+      (.registerServerRpc  comp (symbol->string (caadr section)) (eval `(lambda ,param-name ,section-code))))
+     ((section? 'on-state-change)
+      ()) 
      (else
       (display (string-append ("Unrecognized section: " (car section))))))))
 

@@ -13,6 +13,7 @@ JC = javac
 CLASSES = \
 	./src/main/java/com/github/mjvesa/spil/VaadinUtil.java \
 	./src/main/java/com/github/mjvesa/spil/WatchDir.java \
+	./src/main/java/com/github/mjvesa/spil/SchemeComponentState.java \
 	./src/main/java/com/github/mjvesa/spil/SchemeComponent.java \
 	./src/main/java/com/github/mjvesa/spil/MyUI.java \
 

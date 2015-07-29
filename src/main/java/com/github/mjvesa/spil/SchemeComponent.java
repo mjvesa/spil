@@ -1,5 +1,6 @@
 package com.github.mjvesa.spil;
 
+import com.github.mjvesa.spil.SchemeComponentState;
 import com.vaadin.annotations.JavaScript;
 import com.vaadin.ui.AbstractJavaScriptComponent;
 import com.vaadin.ui.JavaScriptFunction;
@@ -32,6 +33,11 @@ public class SchemeComponent extends AbstractJavaScriptComponent {
 		public void call(JsonArray arguments) {
 		    ((SchemeProcedure)target).apply(REPL.parseScheme(arguments.getString(0)));
 		}});
+    }
+
+
+    public SchemeComponentState getState() {
+	return (SchemeComponentState)super.getState();
     }
 }
 
