@@ -12,7 +12,7 @@
 	  (call-server (lambda (name paramz)
 		       (js-invoke self (symbol->string name)  (list-to-string paramz))))
 	  (get-state (lambda ()
-	    (js-invoke self "getState")))
+	    (js-ref (js-invoke self "getState") "lst")))
 	  (append-to-root (lambda (element)
 			    (element-append-child! root-element element))))))
 (define client-code '())
@@ -40,7 +40,7 @@
 			   '(define-macro (on-state-change code)
 			      `(js-set! self "onStateChange"
 					 (js-closure
-					  (lambda () ,@code)))))))
+					  (lambda () ,code)))))))
 
 (define-macro  (widget . widget-definition) 
   `(let ((comp (SchemeComponent.)))
