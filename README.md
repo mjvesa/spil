@@ -12,6 +12,44 @@ Technologies used:
     * JScheme
 	* BiwaScheme
 
+Examples
+========
+
+It's possible to implement complete custom widgets using a tiny fraction of the code required when using Java.
+
+A basic label implemented as a custom widget:
+
+``
+(define-macro (basic-label text)
+  `(widget
+    (client
+    (append-to-root (element-new '(div ,text))))))
+``
+
+
+
+Here's a complete example of a custom widget that features client->server rpc, server->client rpc and shared state. Defining any of those is as easy as defining new functions:
+
+``
+(define-macro (modifiable-label text)
+  `(let ((component (widget
+		     (client
+		      (define text-div (element-new '(div ,text)))
+		      (element-append-child! root-element text-div)
+		      (client-rpc (settext value)
+				  (js-set! text-div "innerHTML" value)
+				  (call-server 'testi '(test list)))
+		      (on-state-change
+		       (js-set! text-div "innerHTML"
+				(get-state))))
+		     (server-rpc (testi text)
+				 (display (.toString text))))))
+     (lambda (op)
+       (case op
+	 ((component) component)
+	 ((settext) (lambda (text) (call-client-rpc component 'settext text)))))))
+``
+
 Goals
 =====
 * See how well Scheme can be used to implement Vaadin applications including theming, markup and client-server communication
