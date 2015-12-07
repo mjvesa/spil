@@ -1,4 +1,4 @@
-;; Custom component examples
+;; Custom component examples, bit of a mess now :)
 (load "vaadin.scm")
 
 ;; Labels are not complex
@@ -7,19 +7,50 @@
     (client
      (append-to-root (element-new '(div ,text))))))
 
+;; Neither are buttons
+(define-macro (native-button text listener)
+  `(widget
+    (client
+     (let ((button (element-new '(button ,text))))
+       (append-to-root button)
+       (js-set! button "onclick" (js-closure (lambda () (call-server 'click '()))))))
+    (server-rpc (click ev)
+		(,listener))))
+
+
+;; Or textfields
+(define-macro (textfield text listener)
+  `(widget
+    (client
+     (let ((tf (element-new '(input type "text" ,text))))
+       (append-to-root tf)
+       (js-set! tf "onchange" (js-closure (lambda () (call-server 'click (js-ref tf "value")))))))
+    (server-rpc (click value)
+		(,listener value))))
+
+
+;; Or slider
+(define-macro (slider text listener)
+  `(widget
+    (client
+     (let ((slider (element-new '(input type "range" ,text))))
+       (append-to-root tf)
+       (js-set! slider "oninput" (js-closure (lambda () (call-server 'click (js-ref slider "value")))))))
+    (server-rpc (click value)
+		(,listener value))))
+
 ;; Label with client and server RPC, state change listening and API using
 ;; message passing
 (define-macro (modifiable-label text)
   `(let ((component (widget
 		     (client
-		      (define text-div (element-new '(div ,text)))
-		      (element-append-child! root-element text-div)
-		      (client-rpc (settext value)
-				  (js-set! text-div "innerHTML" value)
-				  (call-server 'testi '(test list)))
-		      (on-state-change
-		       (js-set! text-div "innerHTML"
-				(get-state))))
+		      (let ((text-div (element-new '(div ,text))))
+			(element-append-child! root-element text-div)
+			(client-rpc (settext value)
+				    (js-set! text-div "innerHTML" value))
+			(on-state-change
+			 (js-set! text-div "innerHTML"
+				  (get-state)))))
 		     (server-rpc (testi text)
 				 (display (.toString text))))))
      (lambda (op)
@@ -71,6 +102,9 @@
    'sendcoords
    "blue"))
 
+(define lbl
+ (modifiable-label "piuks"))
+
 (define (main ui)
   (let ((label (modifiable-label "Old text")))
     (set! main-layout ui)
@@ -85,5 +119,14 @@
     (.setSpacing hl #t)
     (.addComponent hl left-canvas)
     (.addComponent hl right-canvas)
-    (.addComponent ui hl)))
+    (.addComponent ui hl))
+
+  (.addComponent ui (native-button "poksis" (lambda () (display "Well clickety clik"))))
+
+  (letrec ((labl (modifiable-label "piuks"))
+	   (slaikkari (slider "poksis"
+			      (lambda (value)
+				((lbl 'settext) (string-append "\"field value: " value "\""))))))    
+    (.addComponent ui (lbl 'component))
+    (.addComponent ui slaikkari)))
 
