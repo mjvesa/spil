@@ -1,9 +1,8 @@
 ;; Example of one way of perming component intercommunication on the client side
 (load "vaadin.scm")
 
+;; Naive gensym implementation
 (define *sym-count* 0)
-
-;; Trivial gensym implementation
 (define (gensym)
   (set! *sym-count* (+ *sym-count* 1))
   (string->symbol (string-append "gensym" (number->string *sym-count*))))
