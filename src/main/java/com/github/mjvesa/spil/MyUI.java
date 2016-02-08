@@ -20,13 +20,15 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.UI;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.event.ShortcutAction.ModifierKey;
 import jscheme.JScheme;
 import com.github.mjvesa.spil.WatchDir;
+import com.github.mjvesa.spil.WatchDir.FileChangeCallback;
 
-@Push
+//@Push
 @Theme("base")
 @Widgetset("com.vaadin.DefaultWidgetSet")
 public class MyUI extends UI {
@@ -34,46 +36,47 @@ public class MyUI extends UI {
     private String sourceDir; 
     private Button evalButton;
     private JScheme scheme;
-    
+
     @Override
     protected void init(VaadinRequest vaadinRequest) {
-
-	loadProps();
-	
+        setPollInterval(1000);
+        loadProps();
         final VerticalLayout layout = new VerticalLayout();
         layout.setMargin(true);
         layout.setSizeFull();
 
         final VerticalLayout outputLayout = new VerticalLayout();
-	outputLayout.setSizeFull();
-        Button eval = new Button("Eval", event -> {
-		outputLayout.removeAllComponents();
-		final JScheme js = new JScheme();
-		js.eval("(begin " + loadBuffer() + ")");
-		js.call("main", outputLayout);
-	    });
-	evalButton = eval;
-        eval.setClickShortcut(KeyCode.R, ModifierKey.CTRL);
-        VerticalLayout mainLayout = 
-	    new VerticalLayout(outputLayout, eval);
-        mainLayout.setSizeFull();
+        outputLayout.setSizeFull();
+        Button eval = new Button("Eval", new ClickListener()  {
+            public void buttonClick(Button.ClickEvent event) {
+                outputLayout.removeAllComponents();
+                final JScheme js = new JScheme();
+                js.eval("(begin " + loadBuffer() + ")");
+                js.call("main", outputLayout);
+        }});
+    evalButton = eval;
+    eval.setClickShortcut(KeyCode.R, ModifierKey.CTRL);
+    VerticalLayout mainLayout = new VerticalLayout(outputLayout, eval);
+    mainLayout.setSizeFull();
 	mainLayout.setExpandRatio(outputLayout, 1);
-        setContent(mainLayout);
+    setContent(mainLayout);
+        /*
 	new Thread() {
 	    public void run() {		
 		try {
-		    new WatchDir(FileSystems.getDefault().getPath(sourceDir), true, () -> {
+		    new WatchDir(FileSystems.getDefault().getPath(sourceDir), true, new FileChangeCallback() {
+		    public void fileChange() {
 			    MyUI.this.access( new Runnable() {
 				    public void run() {
-					evalButton.click();
-				    }
+				        evalButton.click();
+		            }
 				});
-		    }).processEvents();
+		    }}).processEvents();
 		} catch (IOException e) {
 		    e.printStackTrace();
 		}
 	    }
-	}.start();
+	    }.start();*/
     }
 
     private String loadBuffer() {

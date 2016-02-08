@@ -6,7 +6,7 @@ import jsint.Procedure;
 
 public class VaadinUtil {
 
-	public static Button.ClickListener buttonClickListener(Procedure proc) {
+	public static Button.ClickListener buttonClickListener(final Procedure proc) {
 		return new Button.ClickListener() {
 			@Override
 			public void buttonClick(Button.ClickEvent event) {

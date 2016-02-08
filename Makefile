@@ -3,7 +3,7 @@
 TOMCAT = /home/mjvesa/opt/tomcat
 WEBAPPS =  $(TOMCAT)/webapps
 CLASSPATH = .:WEB-INF/lib/*:$(TOMCAT)/lib/*:WEB-INF/classes
-JFLAGS = -g -cp $(CLASSPATH) -d WEB-INF/classes
+JFLAGS = -g -cp $(CLASSPATH) -d WEB-INF/classes -source 1.6 -target 1.6
 
 JC = javac
 .SUFFIXES: .java .class

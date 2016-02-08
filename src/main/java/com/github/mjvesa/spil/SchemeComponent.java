@@ -10,7 +10,7 @@ import jscheme.REPL;
 import jsint.Pair;
 import jsint.Closure;
 
-@JavaScript({"biwascheme-0.6.2.js", "scheme_component.js"})
+@JavaScript({"biwascheme.js", "react.js", "react-dom.js", "scheme_component.js"})
 public class SchemeComponent extends AbstractJavaScriptComponent {
 
     public SchemeComponent() {
@@ -28,7 +28,7 @@ public class SchemeComponent extends AbstractJavaScriptComponent {
 	callFunction(func);
     }
 
-    public void registerServerRpc(String name, Closure target) {
+    public void registerServerRpc(String name, final Closure target) {
 	addFunction(name, new JavaScriptFunction() {
 		public void call(JsonArray arguments) {
 		    ((SchemeProcedure)target).apply(REPL.parseScheme(arguments.getString(0)));
