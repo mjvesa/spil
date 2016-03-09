@@ -29,7 +29,7 @@ A basic label implemented as a custom widget:
 Here's a complete example of a custom widget that features client->server rpc, server->client rpc and shared state. Defining any of those is as easy as defining new functions:
 
 ```
-define-macro (modifiable-label text)
+(define-macro (modifiable-label text)
   `(let ((component (widget
 		     (client
 		      (let ((text-div (element-new '(div ,text))))
