@@ -29,17 +29,16 @@ A basic label implemented as a custom widget:
 Here's a complete example of a custom widget that features client->server rpc, server->client rpc and shared state. Defining any of those is as easy as defining new functions:
 
 ```
-(define-macro (modifiable-label text)
+define-macro (modifiable-label text)
   `(let ((component (widget
 		     (client
-		      (define text-div (element-new '(div ,text)))
-		      (element-append-child! root-element text-div)
-		      (client-rpc (settext value)
-				  (js-set! text-div "innerHTML" value)
-				  (call-server 'testi '(test list)))
-		      (on-state-change
-		       (js-set! text-div "innerHTML"
-				(get-state))))
+		      (let ((text-div (element-new '(div ,text))))
+			(element-append-child! root-element text-div)
+			(client-rpc (settext value)
+				    (js-set! text-div "innerHTML" value))
+			(on-state-change
+			 (js-set! text-div "innerHTML"
+				  (get-state)))))
 		     (server-rpc (testi text)
 				 (display (.toString text))))))
      (lambda (op)
