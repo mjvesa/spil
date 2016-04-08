@@ -6,6 +6,7 @@
 
 (load "vaadin-widget.scm")
 
+
 (define (inner-doto target ops)
   (if (eq? ops '())
       `(,target)

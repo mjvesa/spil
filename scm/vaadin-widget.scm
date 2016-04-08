@@ -42,13 +42,17 @@
 					 (js-closure
 					  (lambda () ,code)))))))
 
-(define-macro  (widget . widget-definition) 
+(define-macro  (widget widget-definition) 
   `(let ((comp (SchemeComponent.)))
      (upload-macros comp) ;; TODO needs to be part of the app init
      (set! client-code client-boilerplate)
      (for-each (lambda (def) (handle-widget-section comp  def)) ',widget-definition)
      (.setComponentCode comp (.toString (list (append '(lambda ()) (list client-code)))))
      comp))
+
+(define-macro (define-widget params . widget-definition)
+  `(define-macro ,params
+     (list 'widget ,@widget-definition)))
 
 (define (call-client comp func)
   (.callClient comp (.toString func)))
