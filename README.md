@@ -20,10 +20,9 @@ It's possible to implement complete custom widgets using a tiny fraction of the 
 A basic label implemented as a custom widget:
 
 ```
-(define-macro (basic-label text)
-  `(widget
-    (client
-    (append-to-root (element-new '(div ,text))))))
+(define-widget (basic-label text)
+  `((client
+      (append-to-root (element-new '(div ,text))))))
 ```
 
 Here's a complete example of a custom widget that features client->server rpc, server->client rpc and shared state. Defining any of those is as easy as defining new functions:
