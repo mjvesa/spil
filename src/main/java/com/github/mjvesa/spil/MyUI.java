@@ -21,6 +21,7 @@ import com.vaadin.server.VaadinServlet;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.ui.UI;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.event.ShortcutAction.ModifierKey;
@@ -28,104 +29,108 @@ import jscheme.JScheme;
 import com.github.mjvesa.spil.WatchDir;
 import com.github.mjvesa.spil.WatchDir.FileChangeCallback;
 
-//@Push
+@Push
 @Theme("base")
-@Widgetset("com.vaadin.DefaultWidgetSet")
+@Widgetset("com.github.mjvesa.spil.SpilWidgetset")
 public class MyUI extends UI {
 
-    private String sourceDir; 
-    private Button evalButton;
-    private JScheme scheme;
+	private String sourceDir;
+	private Button evalButton;
+	private JScheme scheme;
 
-    @Override
-    protected void init(VaadinRequest vaadinRequest) {
-        setPollInterval(1000);
-        loadProps();
-        final VerticalLayout layout = new VerticalLayout();
-        layout.setMargin(true);
-        layout.setSizeFull();
+	@Override
+	protected void init(VaadinRequest vaadinRequest) {
+		setPollInterval(1000);
+		loadProps();
+		final VerticalLayout layout = new VerticalLayout();
+		layout.setMargin(true);
+		layout.setSizeFull();
 
-        final VerticalLayout outputLayout = new VerticalLayout();
-        outputLayout.setSizeFull();
-        Button eval = new Button("Eval", new ClickListener()  {
-            public void buttonClick(Button.ClickEvent event) {
-                outputLayout.removeAllComponents();
-                final JScheme js = new JScheme();
-                js.eval("(begin " + loadBuffer() + ")");
-                js.call("main", outputLayout);
-        }});
-    evalButton = eval;
-    eval.setClickShortcut(KeyCode.R, ModifierKey.CTRL);
-    VerticalLayout mainLayout = new VerticalLayout(outputLayout, eval);
-    mainLayout.setSizeFull();
-	mainLayout.setExpandRatio(outputLayout, 1);
-    setContent(mainLayout);
-        /*
-	new Thread() {
-	    public void run() {		
+		final VerticalLayout outputLayout = new VerticalLayout();
+		outputLayout.setSizeFull();
+		Button eval = new Button("Eval", new ClickListener() {
+			public void buttonClick(Button.ClickEvent event) {
+				outputLayout.removeAllComponents();
+				final JScheme js = new JScheme();
+				js.eval("(begin " + loadBuffer() + ")");
+				js.call("main", outputLayout);
+			}
+		});
+		evalButton = eval;
+		eval.setClickShortcut(KeyCode.R, ModifierKey.CTRL);
+		VerticalLayout mainLayout = new VerticalLayout(outputLayout, eval);
+		mainLayout.setSizeFull();
+		mainLayout.setExpandRatio(outputLayout, 1);
+		setContent(mainLayout);
+
+//		new Thread() {
+//			public void run() {
+//				try {
+//					new WatchDir(FileSystems.getDefault().getPath(sourceDir), true, new FileChangeCallback() {
+//						public void fileChange() {
+//							MyUI.this.access(new Runnable() {
+//								public void run() {
+//									evalButton.click();
+//								}
+//							});
+//						}
+//					}).processEvents();
+//				} catch (IOException e) {
+//					e.printStackTrace();
+//				}
+//			}
+//		}.start();
+
+	}
+
+	private String loadBuffer() {
+		StringBuffer sb = new StringBuffer();
 		try {
-		    new WatchDir(FileSystems.getDefault().getPath(sourceDir), true, new FileChangeCallback() {
-		    public void fileChange() {
-			    MyUI.this.access( new Runnable() {
-				    public void run() {
-				        evalButton.click();
-		            }
-				});
-		    }}).processEvents();
+			FileReader fr = new FileReader(new File(sourceDir + "main.scm"));
+			char[] chars = new char[100];
+			while (fr.ready()) {
+				int count = fr.read(chars);
+				sb.append(chars, 0, count);
+			}
+			fr.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
 		} catch (IOException e) {
-		    e.printStackTrace();
+			e.printStackTrace();
 		}
-	    }
-	    }.start();*/
-    }
 
-    private String loadBuffer() {
-	StringBuffer sb = new StringBuffer();
-	try {
-	    FileReader fr = new FileReader(new File(sourceDir + "main.scm"));
-	    char[] chars = new char[100];
-	    while (fr.ready()) {
-		int count = fr.read(chars);
-		sb.append(chars, 0, count);
-	    }
-	} catch (FileNotFoundException e) {
-	    e.printStackTrace();
-	} catch (IOException e) {
-	    e.printStackTrace();
+		return sb.toString();
 	}
-	return sb.toString();
-    }
 
-   private void loadProps() {
-	try {
-	    URL propsURL = getClass().getClassLoader().getResource("spil.properties");
-	    Properties props = new Properties();
-	    FileInputStream in = new FileInputStream(propsURL.getPath());
-	    props.load(in);
-	    in.close();
-	    sourceDir = props.getProperty("PROJECT_DIR");
-	} catch (FileNotFoundException e) {
-	    e.printStackTrace();
-	} catch (IOException e) {
-	    e.printStackTrace();
+	private void loadProps() {
+		try {
+			URL propsURL = getClass().getResource("spil.properties");
+			Properties props = new Properties();
+			FileInputStream in = new FileInputStream(propsURL.getPath());
+			props.load(in);
+			in.close();
+			sourceDir = props.getProperty("PROJECT_DIR");
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
-    }
 
-    public void setInterpreter(JScheme scheme) {
-	this.scheme = scheme;
-    }
+	public void setInterpreter(JScheme scheme) {
+		this.scheme = scheme;
+	}
 
-    public JScheme getInterpreter() {
-	return this.scheme;
-    }
+	public JScheme getInterpreter() {
+		return this.scheme;
+	}
 
-    public static MyUI getCurrent() {
-	return (MyUI)UI.getCurrent();
-    }
-    
+	public static MyUI getCurrent() {
+		return (MyUI) UI.getCurrent();
+	}
 
-    @WebServlet(urlPatterns = "/*", name = "MyUIServlet", asyncSupported = true)
-    @VaadinServletConfiguration(ui = MyUI.class, productionMode = false)
-    public static class MyUIServlet extends VaadinServlet {
-    }
+	@WebServlet(urlPatterns = "/*", name = "MyUIServlet", asyncSupported = true)
+	@VaadinServletConfiguration(ui = MyUI.class, productionMode = false)
+	public static class MyUIServlet extends VaadinServlet {
+	}
 }

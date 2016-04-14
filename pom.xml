@@ -9,11 +9,11 @@
 	<name>spil</name>
 
 	<properties>
-		<vaadin.version>7.5.0</vaadin.version>
+		<vaadin.version>7.6.4</vaadin.version>
 		<vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
 		<jetty.plugin.version>9.2.3.v20140905</jetty.plugin.version>
-		<project.source.version>1.7</project.source.version>
-		<project.target.version>1.7</project.target.version>
+		<project.source.version>1.8</project.source.version>
+		<project.target.version>1.8</project.target.version>
 		<project.encoding>UTF-8</project.encoding>
 	</properties>
 
@@ -66,6 +66,14 @@
 			<artifactId>vaadin-client</artifactId>
 			<scope>provided</scope>
 		</dependency>
+
+        <dependency>
+          <groupId>net.sourceforge.jscheme</groupId>
+          <artifactId>jscheme</artifactId>
+          <version>0.7.2</version>
+          <scope>system</scope>
+          <systemPath>${project.basedir}/lib/jscheme-7.2.jar</systemPath>
+        </dependency>
 		<!--
 		  Needed when using the widgetset optimizer (custom ConnectorBundleLoaderFactory).
 		  
