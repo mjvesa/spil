@@ -1,6 +1,9 @@
 package com.github.mjvesa.spil;
 
+import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
+
+import org.jsoup.nodes.Element;
 
 import java.lang.StringBuffer;
 import java.util.Properties;
@@ -16,6 +19,11 @@ import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.annotations.Widgetset;
 import com.vaadin.annotations.Push;
+import com.vaadin.server.BootstrapFragmentResponse;
+import com.vaadin.server.BootstrapListener;
+import com.vaadin.server.BootstrapPageResponse;
+import com.vaadin.server.SessionInitEvent;
+import com.vaadin.server.SessionInitListener;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.ui.VerticalLayout;
@@ -32,7 +40,7 @@ import com.github.mjvesa.spil.WatchDir.FileChangeCallback;
 @Push
 @Theme("base")
 @Widgetset("com.github.mjvesa.spil.SpilWidgetset")
-public class MyUI extends UI {
+public class SpilUI extends UI {
 
 	private String sourceDir;
 	private Button evalButton;
@@ -63,23 +71,24 @@ public class MyUI extends UI {
 		mainLayout.setExpandRatio(outputLayout, 1);
 		setContent(mainLayout);
 
-//		new Thread() {
-//			public void run() {
-//				try {
-//					new WatchDir(FileSystems.getDefault().getPath(sourceDir), true, new FileChangeCallback() {
-//						public void fileChange() {
-//							MyUI.this.access(new Runnable() {
-//								public void run() {
-//									evalButton.click();
-//								}
-//							});
-//						}
-//					}).processEvents();
-//				} catch (IOException e) {
-//					e.printStackTrace();
-//				}
-//			}
-//		}.start();
+		// new Thread() {
+		// public void run() {
+		// try {
+		// new WatchDir(FileSystems.getDefault().getPath(sourceDir), true, new
+		// FileChangeCallback() {
+		// public void fileChange() {
+		// MyUI.this.access(new Runnable() {
+		// public void run() {
+		// evalButton.click();
+		// }
+		// });
+		// }
+		// }).processEvents();
+		// } catch (IOException e) {
+		// e.printStackTrace();
+		// }
+		// }
+		// }.start();
 
 	}
 
@@ -125,12 +134,39 @@ public class MyUI extends UI {
 		return this.scheme;
 	}
 
-	public static MyUI getCurrent() {
-		return (MyUI) UI.getCurrent();
+	public static SpilUI getCurrent() {
+		return (SpilUI) UI.getCurrent();
 	}
 
-	@WebServlet(urlPatterns = "/*", name = "MyUIServlet", asyncSupported = true)
-	@VaadinServletConfiguration(ui = MyUI.class, productionMode = false)
-	public static class MyUIServlet extends VaadinServlet {
+	@WebServlet(urlPatterns = "/*", name = "SpilUIServlet", asyncSupported = true)
+	@VaadinServletConfiguration(ui = SpilUI.class, productionMode = false)
+	public static class SpilUIServlet extends VaadinServlet {
+
+		@Override
+		protected void servletInitialized() throws ServletException {
+			super.servletInitialized();
+			getService().addSessionInitListener(new SessionInitListener() {
+
+				public void sessionInit(SessionInitEvent event) {
+					event.getSession().addBootstrapListener(biwaschemeInjector);
+				}
+			});
+		}
 	}
+
+	public static BootstrapListener biwaschemeInjector = new BootstrapListener() {
+
+		@Override
+		public void modifyBootstrapPage(BootstrapPageResponse response) {
+			Element head = response.getDocument().getElementsByTag("head").get(0);
+			Element polymer = response.getDocument().createElement("script");
+			polymer.attr("src", "VAADIN/js/biwascheme.js");
+			head.appendChild(polymer);
+		}
+
+		@Override
+		public void modifyBootstrapFragment(BootstrapFragmentResponse response) {
+
+		}
+	};
 }

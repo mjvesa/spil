@@ -10,7 +10,7 @@ import jscheme.REPL;
 import jsint.Pair;
 import jsint.Closure;
 
-@JavaScript({"biwascheme.js", "react.js", "react-dom.js", "scheme_component.js"})
+@JavaScript({"scheme_component.js"})
 public class SchemeComponent extends AbstractJavaScriptComponent {
 
     public SchemeComponent() {

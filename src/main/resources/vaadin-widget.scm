@@ -14,7 +14,7 @@
 	  (get-state (lambda ()
 	    (js-ref (js-invoke self "getState") "lst")))
 	  (append-to-root (lambda (element)
-			    (element-append-child! root-element element))))))
+                        (element-append-child! root-element element))))))
 (define client-code '())
 
 (define (handle-widget-section comp section)
