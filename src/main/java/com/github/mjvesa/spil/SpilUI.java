@@ -22,6 +22,7 @@ import com.vaadin.annotations.Push;
 import com.vaadin.server.BootstrapFragmentResponse;
 import com.vaadin.server.BootstrapListener;
 import com.vaadin.server.BootstrapPageResponse;
+import com.vaadin.server.Page;
 import com.vaadin.server.SessionInitEvent;
 import com.vaadin.server.SessionInitListener;
 import com.vaadin.server.VaadinRequest;
@@ -152,6 +153,12 @@ public class SpilUI extends UI {
 				}
 			});
 		}
+	}
+	
+	public static void evalScheme(String code) {
+	//	String sanitizedCode = code.replace("\"", "\\\"");
+		Page.getCurrent().getJavaScript().execute(" var biwascheme = new BiwaScheme.Interpreter(function(e) { console.error(e.message); });"
+				+ "biwascheme.evaluate('" + code + "');");
 	}
 
 	public static BootstrapListener biwaschemeInjector = new BootstrapListener() {
