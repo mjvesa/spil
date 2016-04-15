@@ -156,7 +156,6 @@ public class SpilUI extends UI {
 	}
 	
 	public static void evalScheme(String code) {
-	//	String sanitizedCode = code.replace("\"", "\\\"");
 		Page.getCurrent().getJavaScript().execute(" var biwascheme = new BiwaScheme.Interpreter(function(e) { console.error(e.message); });"
 				+ "biwascheme.evaluate('" + code + "');");
 	}

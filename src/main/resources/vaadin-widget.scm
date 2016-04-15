@@ -1,4 +1,20 @@
 ;; Widget macro and related helper procedures
+(import "com.github.mjvesa.spil.SpilUI")
+
+(define-macro (client-eval expr)
+  (SpilUI.evalScheme (.toString expr)))
+
+(client-eval
+ (define-macro (js-lambda params body)
+   `(js-closure (lambda ,params ,body))))
+
+(client-eval
+ (define-macro (add-listener target event handler)
+   `(js-invoke ,target "addEventListener" (symbol->string ,event) ,handler)))
+
+(client-eval
+ (define-macro (js-lambda params body)
+   `(js-closure (lambda ,params ,body))))
 
 (client-eval
  (define-macro (client-rpc params code)
