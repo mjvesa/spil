@@ -72,24 +72,23 @@ public class SpilUI extends UI {
 		mainLayout.setExpandRatio(outputLayout, 1);
 		setContent(mainLayout);
 
-		// new Thread() {
-		// public void run() {
-		// try {
-		// new WatchDir(FileSystems.getDefault().getPath(sourceDir), true, new
-		// FileChangeCallback() {
-		// public void fileChange() {
-		// MyUI.this.access(new Runnable() {
-		// public void run() {
-		// evalButton.click();
-		// }
-		// });
-		// }
-		// }).processEvents();
-		// } catch (IOException e) {
-		// e.printStackTrace();
-		// }
-		// }
-		// }.start();
+		new Thread() {
+			public void run() {
+				try {
+					new WatchDir(FileSystems.getDefault().getPath(sourceDir), true, new FileChangeCallback() {
+						public void fileChange() {
+							SpilUI.this.access(new Runnable() {
+								public void run() {
+									evalButton.click();
+								}
+							});
+						}
+					}).processEvents();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}.start();
 
 	}
 
@@ -154,10 +153,12 @@ public class SpilUI extends UI {
 			});
 		}
 	}
-	
+
 	public static void evalScheme(String code) {
-		Page.getCurrent().getJavaScript().execute(" var biwascheme = new BiwaScheme.Interpreter(function(e) { console.error(e.message); });"
-				+ "biwascheme.evaluate('" + code + "');");
+		String sanitizedCode = code.replace("'", "\\'");
+		Page.getCurrent().getJavaScript()
+				.execute(" var biwascheme = new BiwaScheme.Interpreter(function(e) { console.error(e.message); });"
+						+ "biwascheme.evaluate('" + sanitizedCode + "');");
 	}
 
 	public static BootstrapListener biwaschemeInjector = new BootstrapListener() {

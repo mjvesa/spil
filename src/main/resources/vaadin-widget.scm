@@ -13,6 +13,17 @@
    `(js-invoke ,target "addEventListener" (symbol->string ,event) ,handler)))
 
 (client-eval
+ (define (add-listeners-0 target listeners)
+   (if (null? listeners)
+       '()       
+       (cons `(add-listener ,target ',(caar listeners) ,(cadar listeners))
+             (add-listeners-0 target (cdr listeners))))))
+
+(client-eval
+ (define-macro (add-listeners target listeners)
+   (cons 'begin (add-listeners-0 target listeners))))
+
+(client-eval
  (define-macro (js-lambda params body)
    `(js-closure (lambda ,params ,body))))
 

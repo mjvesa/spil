@@ -19,17 +19,15 @@
                                      (js-invoke ctx "fillRect" x y w h))))
                         (append-to-root canvas)
                         (rect 0 0 400 200 "gray")
-                        (add-listener canvas 'mousedown
-                                       (js-lambda (ev) (set! mouse-down #t)))
-                        (add-listener canvas 'mouseup                                   
-                                   (js-lambda (ev) (set! mouse-down #f)))                        
-                        (add-listener canvas  'mousemove
-                                   (js-lambda (ev)
-                                     (let ((x (js-ref ev "offsetX"))
-                                           (y (js-ref ev "offsetY")))
-                                       (if mouse-down
-                                           (rect x y 10 10 "black")
-                                           '())))))))))
+                        (console-warn "about to expand some stuff")
+                        (add-listeners canvas
+                                       ((mousedown (js-lambda (ev) (set! mouse-down #t)))
+                                        (mouseup (js-lambda (ev) (set! mouse-down #f)))
+                                        (mousemove (js-lambda (ev)
+                                                              (let ((x (js-ref ev "offsetX"))
+                                                                    (y (js-ref ev "offsetY")))
+                                                                (if mouse-down
+                                                                    (rect x y 10 10 "black"))))))))))))
     vl))
 
 ;;;;;;;;;
