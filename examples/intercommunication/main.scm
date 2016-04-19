@@ -13,23 +13,27 @@
 (define-macro (slide-label min max listener)
   (let ((lblsym (symbol->string (gensym))))
     `(let* ((lbl (widget
-                  (client
-                   (let ((text-div (element-new '(div "default"))))
-                     (append-to-root text-div)
-                     (js-set! (js-eval "window") ,lblsym (lambda (value) (js-set! text-div "innerHTML" value)))))))
+                  ((client
+                    (let ((text-div (element-new '(div "default"))))
+                      (append-to-root text-div)
+                      (js-set! (js-eval "window") ,lblsym
+                               (lambda (value) (js-set! text-div "innerHTML" value))))))))
             (sldr  (widget
-                    (client
-                     (let ((slider (element-new
-                                    '(input type "range" min ,(number->string min) max ,(number->string max)))))
-                       (append-to-root slider)
-                       (js-set! slider "oninput"
-                                (js-closure (lambda ()
-                                              (let ((value (js-ref slider "value")))
-                                                (if (not (null? (js-ref (js-eval "window") ,lblsym)))
-                                                    ((js-ref (js-eval "window") ,lblsym) (string-append "client: " value)))
-                                                (call-server 'value-change value)))))))                                         
-                    (server-rpc (value-change value)
-                                (,listener value)))))
+                    ((client
+                      (let ((slider (element-new
+                                     '(input type "range" min ,(number->string min)
+                                             max ,(number->string max)))))
+                        (append-to-root slider)
+                        (js-set! slider "oninput"
+                                 (js-closure (lambda ()
+                                               (let ((value (js-ref slider "value")))
+                                                 (if (not (null? (js-ref (js-eval "window")
+                                                                         ,lblsym)))
+                                                     ((js-ref (js-eval "window") ,lblsym)
+                                                      (string-append "client: " value)))
+                                                 (call-server 'value-change value)))))))
+                     (server-rpc (value-change value)
+                                 (,listener value))))))
        (lambda (op)
          (case op
            ((get-slider) sldr)
@@ -41,12 +45,12 @@
 
 (define (main ui)
   (set! *ui* ui)
-  (let ((sldr (slide-label 10 200 (lambda (value) 
-                                    ( .setValue *lbl* (string-append "server: " value)))))
-        (hl (HorizontalLayout.)))
-    (.setSpacing hl #t)
-    (.addComponent hl *lbl*)
-    (.addComponent hl (sldr 'get-label))
-    (.addComponent ui hl)
-    (.addComponent ui (sldr 'get-slider))))
+  
+  (let ((sldr (slide-label 10 200
+                           (lambda (value) 
+                             (.setValue *lbl* (string-append "server: " value))))))
+    (add-components ui (list (horizontal-layout
+                              *lbl*
+                              (sldr 'get-label))
+                             (sldr 'get-slider)))))
 
