@@ -5,6 +5,7 @@
 (import "com.github.mjvesa.spil.SchemeComponent")
 
 (load "vaadin-widget.scm")
+(load "vaadin-components.scm")
 
 
 (define (inner-doto target ops)
