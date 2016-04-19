@@ -46,3 +46,8 @@
 (define (text-area name . listener)
   (TextArea. name))
 
+;;;;;;;;
+;;; Misc
+;;;;;;;;
+(define (label text)
+  (Label. text))

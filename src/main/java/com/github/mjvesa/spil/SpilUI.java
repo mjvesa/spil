@@ -66,7 +66,7 @@ public class SpilUI extends UI {
 			}
 		});
 		evalButton = eval;
-		eval.setClickShortcut(KeyCode.R, ModifierKey.CTRL);
+		eval.setClickShortcut(KeyCode.E, ModifierKey.CTRL);
 		VerticalLayout mainLayout = new VerticalLayout(outputLayout, eval);
 		mainLayout.setSizeFull();
 		mainLayout.setExpandRatio(outputLayout, 1);
