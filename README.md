@@ -1,7 +1,7 @@
 Spil
 ====
 
-A small web app for writing Vaadin UIs in Scheme.  It Provides a bare bones view and  ability to evaluate Scheme scripts either by pressing ctrl-r or when the source files change. Choice of tools for writing code is left for the user.
+A small web app for writing Vaadin UIs in Scheme.  It Provides a bare bones view and  ability to evaluate Scheme scripts either by pressing ctrl-e or when the source files change. Choice of tools for writing code is left for the user.
 
 The Scheme supported by JScheme is R4RS with some limitations.
 
