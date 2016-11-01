@@ -1,7 +1,9 @@
-;;; Widget definition
+;; Widget Extension 
+(import "com.github.mjvesa.spil.SpilUI")
+
 (define client-boilerplate
   '(let*
-       ((namespace "com_github_mjvesa_spil_SchemeComponent")
+       ((namespace "com_github_mjvesa_spil_SchemeExtension")
         (self (js-eval (string-append namespace ".self")))
         (root-element (js-invoke self "getElement"))
         (list-to-string (lambda (lst)
@@ -28,7 +30,7 @@
        (display (string-append "Unrecognized section: " (car section) "\n"))))))
 
 (define-macro  (widget widget-definition) 
-  `(let ((comp (SchemeComponent.)))
+  `(let ((comp (SchemeExtension.)))
      (set! client-code client-boilerplate)
      (for-each (lambda (def) (handle-widget-section comp  def)) ',widget-definition)
      (.setComponentCode comp (.toString (list (append '(lambda ()) (list client-code)))))
@@ -37,4 +39,14 @@
 (define-macro (define-widget params . widget-definition)
   `(define-macro ,params
      (list 'widget ,@widget-definition)))
+
+(define (call-client comp func)
+  (.callClient comp (.toString func)))
+
+(define (call-client-rpc comp func args)
+  (.callClient comp (.toString func) args))
+
+(define (set-widget-state comp state)
+  (.setLst (.getState comp) (.toString state)))
+
 
