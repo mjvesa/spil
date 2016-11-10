@@ -1,5 +1,5 @@
-;;; Widget definition
-(define client-boilerplate
+;; Widget definition
+define client-boilerplate
   '(let*
        ((namespace "com_github_mjvesa_spil_SchemeComponent")
         (self (js-eval (string-append namespace ".self")))
@@ -28,7 +28,7 @@
        (display (string-append "Unrecognized section: " (car section) "\n"))))))
 
 (define-macro  (widget widget-definition) 
-  `(let ((comp (SchemeComponent.)))
+  `(let ((comp (SchemeExtension.))
      (set! client-code client-boilerplate)
      (for-each (lambda (def) (handle-widget-section comp  def)) ',widget-definition)
      (.setComponentCode comp (.toString (list (append '(lambda ()) (list client-code)))))

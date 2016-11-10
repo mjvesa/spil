@@ -3,13 +3,13 @@ package com.github.mjvesa.spil;
 import com.vaadin.shared.ui.JavaScriptComponentState;
 
 public class SchemeComponentState extends JavaScriptComponentState {
-    private String lst;
+    private String list;
 
-    public void setLst(String lst) {
-	this.lst = lst;
+    public void setLst(String list) {
+	this.list = list;
     }
 
     public String getLst() {
-	return this.lst;
+	return this.list;
     }
 }

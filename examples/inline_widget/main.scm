@@ -20,14 +20,13 @@
         (append-to-root canvas)
         (rect 0 0 200 200 "gray")
         (add-listeners canvas
-                       ((mousedown (js-lambda (ev) (set! mouse-down #t)))
-                        (mouseup (js-lambda (ev) (set! mouse-down #f)))
-                        (mousemove (js-lambda (ev)
-                                              (let ((x (js-ref ev "offsetX"))
-                                                    (y (js-ref ev "offsetY")))
-                                                (if mouse-down
-                                                    (begin (call-server 'add-coordinate (list x y))
-                                                           (rect x y 10 15 "blue"))))))))))
+                       ((mousedown (set! mouse-down #t))
+                        (mouseup (set! mouse-down #f))
+                        (mousemove (let ((x (js-ref ev "offsetX"))
+                                         (y (js-ref ev "offsetY")))
+                                     (if mouse-down
+                                         (begin (call-server 'add-coordinate (list x y))
+                                                (rect x y 10 15 "blue")))))))))
      (server-rpc (add-coordinate coord)
                  (set! signature (cons coord signature)))))))
 ;;;;;;;;;
