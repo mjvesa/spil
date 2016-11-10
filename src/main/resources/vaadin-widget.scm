@@ -4,13 +4,20 @@
 (define-macro (client-eval expr)
   (SpilUI.evalScheme (.toString expr)))
 
-(client-eval
+(define (client-eval-all-0 exprs)
+  (if (null? exprs)
+      '()
+      (cons `(SpilUI.evalScheme (.toString ,(car exprs))) (client-eval-all-0 (cdr exprs)))))
+
+(define-macro (client-eval-all . exprs)
+  (cons 'begin (client-eval-all-0 exprs)))
+
+(client-eval-all
  (define-macro (js-lambda params body)
    `(js-closure (lambda ,params ,body))))
 
-(client-eval
- (define-macro (add-listener target event handler)
-   `(js-invoke ,target "addEventListener" (symbol->string ,event) ,handler)))
+(client-eval (define-macro (add-listener target event handler)
+               `(js-invoke ,target "addEventListener" (symbol->string ,event) (js-lambda (ev) ,handler))))
 
 (client-eval
  (define (add-listeners-0 target listeners)

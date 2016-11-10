@@ -34,7 +34,7 @@ import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.ui.UI;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.event.ShortcutAction.ModifierKey;
-import jscheme.JScheme;
+import com.github.mjvesa.jscm.jscheme.JScheme;
 import com.github.mjvesa.spil.WatchDir;
 import com.github.mjvesa.spil.WatchDir.FileChangeCallback;
 

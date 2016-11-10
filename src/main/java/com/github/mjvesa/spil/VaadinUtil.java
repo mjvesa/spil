@@ -1,8 +1,8 @@
 package com.github.mjvesa.spil;
 
+import com.github.mjvesa.jscm.jsint.Pair;
+import com.github.mjvesa.jscm.jsint.Procedure;
 import com.vaadin.ui.Button;
-import jsint.Pair;
-import jsint.Procedure;
 
 public class VaadinUtil {
 
