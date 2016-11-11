@@ -39,22 +39,6 @@
              (js-closure
               (lambda () ,code)))))
 
-(define client-boilerplate
-  '(let*
-       ((namespace "com_github_mjvesa_spil_SchemeComponent")
-        (self (js-eval (string-append namespace ".self")))
-        (root-element (js-invoke self "getElement"))
-        (list-to-string (lambda (lst)
-                          (let ((out (open-output-string)))
-                            (write lst out)
-                            (get-output-string out))))
-        (call-server (lambda (name paramz)
-                       (js-invoke self (symbol->string name)  (list-to-string paramz))))
-        (get-state (lambda ()
-                     (js-ref (js-invoke self "getState") "lst")))
-        (append-to-root (lambda (element)
-                          (element-append-child! root-element element))))))
-
 (define (call-client comp func)
   (.callClient comp (.toString func)))
 

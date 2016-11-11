@@ -54,6 +54,14 @@ Goals
 
 Building
 ========
-Run make to make. The makefile needs to be modified to suit
-your environment. Also add your source directory to spil.properties before building.
+The project uses maven, so the usual incantations apply:
+
+```
+	mvn clean package
+```
+To package and
+```
+	mvn jetty:run
+```
+To run application. It becomes accessible at http://localhost:8080
 

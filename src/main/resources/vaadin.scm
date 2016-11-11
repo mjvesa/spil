@@ -3,10 +3,11 @@
 (import "com.vaadin.data.util.*")
 (import "com.github.mjvesa.spil.VaadinUtil")
 (import "com.github.mjvesa.spil.SchemeComponent")
+(import "com.github.mjvesa.spil.SchemeExtension")
 
+(load "vaadin-client.scm")
 (load "vaadin-widget.scm")
 (load "vaadin-components.scm")
-
 
 (define (inner-doto target ops)
   (if (eq? ops '())

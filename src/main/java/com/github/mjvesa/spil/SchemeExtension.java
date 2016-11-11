@@ -1,17 +1,16 @@
 package com.github.mjvesa.spil;
 
-import com.github.mjvesa.spil.SchemeComponentState;
+import com.github.mjvesa.jscm.jscheme.REPL;
+import com.github.mjvesa.jscm.jscheme.SchemeProcedure;
+import com.github.mjvesa.jscm.jsint.Closure;
 import com.vaadin.annotations.JavaScript;
+import com.vaadin.server.AbstractClientConnector;
 import com.vaadin.server.AbstractJavaScriptExtension;
-import com.vaadin.ui.AbstractJavaScriptComponent;
 import com.vaadin.ui.JavaScriptFunction;
-import elemental.json.JsonArray;
-import jscheme.SchemeProcedure;
-import jscheme.REPL;
-import jsint.Pair;
-import jsint.Closure;
 
-@JavaScript({"scheme_component.js"})
+import elemental.json.JsonArray;
+
+@JavaScript({"scheme_extension.js"})
 public class SchemeExtension extends AbstractJavaScriptExtension {
 
     /**
@@ -22,6 +21,10 @@ public class SchemeExtension extends AbstractJavaScriptExtension {
 
 	public SchemeExtension() {
     }
+	
+	public void extendTarget(AbstractClientConnector target) {
+		extend(target);
+	}
 
     public void setComponentCode(String src) {
 	callFunction("setComponentCode", src);

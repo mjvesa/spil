@@ -1,5 +1,5 @@
-;; Widget definition
-define client-boilerplate
+;; Widget and extension definition
+(define client-boilerplate
   '(let*
        ((namespace "com_github_mjvesa_spil_SchemeComponent")
         (self (js-eval (string-append namespace ".self")))
@@ -14,6 +14,23 @@ define client-boilerplate
                      (js-ref (js-invoke self "getState") "lst")))
         (append-to-root (lambda (element)
                           (element-append-child! root-element element))))))
+
+(define client-boilerplate-extension
+  '(let*
+       ((namespace "com_github_mjvesa_spil_SchemeExtension")
+        (self (js-eval (string-append namespace ".self")))
+        (root-element (js-invoke self "getElement"))
+        (list-to-string (lambda (lst)
+                          (let ((out (open-output-string)))
+                            (write lst out)
+                            (get-output-string out))))
+        (call-server (lambda (name paramz)
+                       (js-invoke self (symbol->string name)  (list-to-string paramz))))
+        (get-state (lambda ()
+                     (js-ref (js-invoke self "getState") "lst")))
+        (append-to-root (lambda (element)
+                          (element-append-child! root-element element))))))
+
 (define client-code '())
 
 (define (handle-widget-section comp section)
@@ -27,14 +44,26 @@ define client-boilerplate
       (else
        (display (string-append "Unrecognized section: " (car section) "\n"))))))
 
+;;; Widgets
 (define-macro  (widget widget-definition) 
-  `(let ((comp (SchemeExtension.))
+  `(let ((comp (SchemeComponent.))
      (set! client-code client-boilerplate)
      (for-each (lambda (def) (handle-widget-section comp  def)) ',widget-definition)
      (.setComponentCode comp (.toString (list (append '(lambda ()) (list client-code)))))
-     comp))
+     comp)))
 
 (define-macro (define-widget params . widget-definition)
   `(define-macro ,params
      (list 'widget ,@widget-definition)))
 
+;;; Extensions
+(define-macro  (extension widget-definition) 
+  `(let ((comp (SchemeExtension.)))
+     (set! client-code client-boilerplate-extension)
+     (for-each (lambda (def) (handle-widget-section comp  def)) ',widget-definition)
+     (.setComponentCode comp (.toString (list (append '(lambda ()) (list client-code)))))
+     comp))
+
+(define-macro (define-extension params . extension-definition)
+  `(define-macro ,params
+     (list 'extension ,@extension-definition)))
