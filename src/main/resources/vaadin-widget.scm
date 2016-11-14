@@ -8,6 +8,8 @@
                           (let ((out (open-output-string)))
                             (write lst out)
                             (get-output-string out))))
+        (add-resize-listener (lambda (element listener)
+                               (js-invoke self "addResizeListener" element (js-lambda () (listener)))))
         (call-server (lambda (name paramz)
                        (js-invoke self (symbol->string name)  (list-to-string paramz))))
         (get-state (lambda ()
@@ -25,6 +27,8 @@
                           (let ((out (open-output-string)))
                             (write lst out)
                             (get-output-string out))))
+        (add-resize-listener (lambda (element listener)
+                               (js-invoke self "addResizeListener" element (js-lambda () (listener)))))
         (call-server (lambda (name paramz)
                        (js-invoke self (symbol->string name)  (list-to-string paramz))))
         (get-state (lambda ()
@@ -68,3 +72,6 @@
 (define-macro (define-extension params . extension-definition)
   `(define-macro ,params
      (list 'extension ,@extension-definition)))
+
+(define (extend-component ext comp)
+  (.extendTarget ext comp))
