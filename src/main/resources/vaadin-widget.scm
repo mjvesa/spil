@@ -1,51 +1,4 @@
-;; Widget macro and related helper procedures
-(import "com.github.mjvesa.spil.SpilUI")
-
-(define-macro (client-eval expr)
-  (SpilUI.evalScheme (.toString expr)))
-
-(define (client-eval-all-0 exprs)
-  (if (null? exprs)
-      '()
-      (cons `(SpilUI.evalScheme (.toString ,(car exprs))) (client-eval-all-0 (cdr exprs)))))
-
-(define-macro (client-eval-all . exprs)
-  (cons 'begin (client-eval-all-0 exprs)))
-
-(client-eval-all
- (define-macro (js-lambda params body)
-   `(js-closure (lambda ,params ,body))))
-
-(client-eval (define-macro (add-listener target event handler)
-               `(js-invoke ,target "addEventListener" (symbol->string ,event) (js-lambda (ev) ,handler))))
-
-(client-eval
- (define (add-listeners-0 target listeners)
-   (if (null? listeners)
-       '()       
-       (cons `(add-listener ,target ',(caar listeners) ,(cadar listeners))
-             (add-listeners-0 target (cdr listeners))))))
-
-(client-eval
- (define-macro (add-listeners target listeners)
-   (cons 'begin (add-listeners-0 target listeners))))
-
-(client-eval
- (define-macro (js-lambda params body)
-   `(js-closure (lambda ,params ,body))))
-
-(client-eval
- (define-macro (client-rpc params code)
-   `(js-set! self ,(symbol->string (car params))
-             (js-closure
-              (lambda (str) (let ((,@(cdr params) (read (open-input-string str))))
-							  ,code))))))
-(client-eval
- (define-macro (on-state-change code)
-   `(js-set! self "onStateChange"
-             (js-closure
-              (lambda () ,code)))))
-
+;; Widget and extension definition
 (define client-boilerplate
   '(let*
        ((namespace "com_github_mjvesa_spil_SchemeComponent")
@@ -55,12 +8,34 @@
                           (let ((out (open-output-string)))
                             (write lst out)
                             (get-output-string out))))
+        (add-resize-listener (lambda (element listener)
+                               (js-invoke self "addResizeListener" element (js-lambda () (listener)))))
         (call-server (lambda (name paramz)
                        (js-invoke self (symbol->string name)  (list-to-string paramz))))
         (get-state (lambda ()
                      (js-ref (js-invoke self "getState") "lst")))
         (append-to-root (lambda (element)
                           (element-append-child! root-element element))))))
+
+(define client-boilerplate-extension
+  '(let*
+       ((namespace "com_github_mjvesa_spil_SchemeExtension")
+        (self (js-eval (string-append namespace ".self")))
+        (root-element (js-invoke self "getElement"))
+        (parent-element (js-invoke self "getElement" (js-invoke self "getParentId")))
+        (list-to-string (lambda (lst)
+                          (let ((out (open-output-string)))
+                            (write lst out)
+                            (get-output-string out))))
+        (add-resize-listener (lambda (element listener)
+                               (js-invoke self "addResizeListener" element (js-lambda () (listener)))))
+        (call-server (lambda (name paramz)
+                       (js-invoke self (symbol->string name)  (list-to-string paramz))))
+        (get-state (lambda ()
+                     (js-ref (js-invoke self "getState") "lst")))
+        (append-to-root (lambda (element)
+                          (element-append-child! root-element element))))))
+
 (define client-code '())
 
 (define (handle-widget-section comp section)
@@ -74,24 +49,29 @@
       (else
        (display (string-append "Unrecognized section: " (car section) "\n"))))))
 
+;;; Widgets
 (define-macro  (widget widget-definition) 
-  `(let ((comp (SchemeComponent.)))
+  `(let ((comp (SchemeComponent.))
      (set! client-code client-boilerplate)
      (for-each (lambda (def) (handle-widget-section comp  def)) ',widget-definition)
      (.setComponentCode comp (.toString (list (append '(lambda ()) (list client-code)))))
-     comp))
+     comp)))
 
 (define-macro (define-widget params . widget-definition)
   `(define-macro ,params
      (list 'widget ,@widget-definition)))
 
-(define (call-client comp func)
-  (.callClient comp (.toString func)))
+;;; Extensions
+(define-macro  (extension widget-definition) 
+  `(let ((comp (SchemeExtension.)))
+     (set! client-code client-boilerplate-extension)
+     (for-each (lambda (def) (handle-widget-section comp  def)) ',widget-definition)
+     (.setComponentCode comp (.toString (list (append '(lambda ()) (list client-code)))))
+     comp))
 
-(define (call-client-rpc comp func args)
-  (.callClient comp (.toString func) args))
+(define-macro (define-extension params . extension-definition)
+  `(define-macro ,params
+     (list 'extension ,@extension-definition)))
 
-(define (set-widget-state comp state)
-  (.setLst (.getState comp) (.toString state)))
-
-
+(define (extend-component ext comp)
+  (.extendTarget ext comp))
