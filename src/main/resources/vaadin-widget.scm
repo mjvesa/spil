@@ -20,6 +20,7 @@
        ((namespace "com_github_mjvesa_spil_SchemeExtension")
         (self (js-eval (string-append namespace ".self")))
         (root-element (js-invoke self "getElement"))
+        (parent-element (js-invoke self "getElement" (js-invoke self "getParentId")))
         (list-to-string (lambda (lst)
                           (let ((out (open-output-string)))
                             (write lst out)
