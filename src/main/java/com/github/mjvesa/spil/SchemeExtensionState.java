@@ -1,10 +1,10 @@
 package com.github.mjvesa.spil;
 
 import com.vaadin.shared.JavaScriptExtensionState;
-import com.vaadin.shared.ui.JavaScriptComponentState;
 
 public class SchemeExtensionState extends JavaScriptExtensionState {
-    private String lst;
+ 	private static final long serialVersionUID = 4549308722540237059L;
+	private String lst;
 
     public void setLst(String lst) {
 	this.lst = lst;

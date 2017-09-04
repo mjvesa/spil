@@ -51,11 +51,11 @@
 
 ;;; Widgets
 (define-macro  (widget widget-definition) 
-  `(let ((comp (SchemeComponent.))
+  `(let ((comp (SchemeComponent.)))
      (set! client-code client-boilerplate)
      (for-each (lambda (def) (handle-widget-section comp  def)) ',widget-definition)
      (.setComponentCode comp (.toString (list (append '(lambda ()) (list client-code)))))
-     comp)))
+     comp))
 
 (define-macro (define-widget params . widget-definition)
   `(define-macro ,params
